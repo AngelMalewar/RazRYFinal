@@ -32,23 +32,22 @@ app.post("/create-order", async (req, res) => {
 
 });
 
-app.post("/payment-success", async (req, res) => {
+app.get("/payment-success", async (req,res)=>{
 
-    const { userId, days } = req.body;
+  const { uid, days } = req.query;
 
-    const expiry = new Date();
-    expiry.setDate(expiry.getDate() + days);
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + parseInt(days));
 
-    await supabase
-        .from("profiles")
-        .update({
-            is_premium: true,
-            premium_expiry: expiry
-        })
-        .eq("id", userId);
+  await supabase
+    .from("profiles")
+    .update({
+      is_premium:true,
+      premium_expiry:expiry
+    })
+    .eq("id", uid);
 
-    res.json({ success: true });
-
+  res.send("Payment successful. You can return to the app.");
 });
 
 app.listen(5000, () => {
