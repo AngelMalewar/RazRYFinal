@@ -19,25 +19,15 @@
             }).then(r => r.json());
 
             const options = {
-                key: "rzp_live_S9FJRpUQ8s5ixa",
-                amount: order.amount,
-                currency: "INR",
-                order_id: order.id,
-
-                handler: async function () {
-
-                    await fetch("/payment-success", {
-                        method: "POST",
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            userId: new URLSearchParams(location.search).get("uid"),
-                            days: 60
-                        })
-                    });
-
-                    alert("Premium Activated");
-
-                }
+  key:"rzp_live_xxx",
+  amount:order.amount,
+  currency:"INR",
+  order_id:order.id,
+  callback_url:
+  "https://reachyoupremiumapp.onrender.com/payment-success?uid=" +
+  new URLSearchParams(location.search).get("uid") +
+  "&days=60"
+};
 
             };
 
