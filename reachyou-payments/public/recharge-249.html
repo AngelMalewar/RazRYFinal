@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<body>
+
+    <h2>Activating ReachYou Recharge...</h2>
+
+    <script>
+
+        async function startPayment() {
+
+            const order = await fetch("/create-order", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: 249 })
+            }).then(r => r.json());
+
+            const options = {
+                key: "rzp_test_YOURKEY",
+                amount: order.amount,
+                currency: "INR",
+                order_id: order.id,
+
+                handler: async function () {
+
+                    await fetch("/payment-success", {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: new URLSearchParams(location.search).get("uid"),
+                            days: 28
+                        })
+                    });
+
+                    alert("Recharge Successful");
+
+                }
+
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+
+        }
+
+        startPayment();
+
+    </script>
+
+</body>
+
+</html>
