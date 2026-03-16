@@ -34,31 +34,23 @@ app.post("/create-order", async (req, res) => {
 
 app.post("/payment-success", async (req, res) => {
 
-  try {
-
-    const { uid, days } = req.query;
+    const { userId, days } = req.body;
 
     const expiry = new Date();
-    expiry.setDate(expiry.getDate() + parseInt(days));
+    expiry.setDate(expiry.getDate() + days);
 
     await supabase
-      .from("profiles")
-      .update({
-        is_premium: true,
-        premium_expiry: expiry
-      })
-      .eq("id", uid);
+        .from("profiles")
+        .update({
+            is_premium: true,
+            premium_expiry: expiry
+        })
+        .eq("id", userId);
 
-    res.send("Payment successful. Premium activated.");
-
-  } catch (err) {
-
-    console.error(err);
-    res.status(500).send("Error updating premium");
-
-  }
+    res.json({ success: true });
 
 });
+
 app.listen(5000, () => {
     console.log("Server running on port 5000");
 });
