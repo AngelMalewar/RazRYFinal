@@ -45,11 +45,11 @@ app.get("/payment-success", async (req,res)=>{
       is_premium:true,
       premium_expiry:expiry
     })
-    .eq("id", uid);
+    .eq("id",uid);
 
-  res.send("Payment successful. You can return to the app.");
+  res.send("Payment successful. Premium activated.");
+
 });
-
 app.listen(5000, () => {
     console.log("Server running on port 5000");
 });
