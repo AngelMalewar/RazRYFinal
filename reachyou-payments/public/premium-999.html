@@ -1,102 +1,58 @@
 <html>
 
 <head>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
 
-    <h2>Activating ReachYou Premium...</h2>
+<h2>Activating ReachYou Premium...</h2>
 
-    <script>
+<script>
 
-        async function startPayment() {
+async function startPayment(){
 
-            try {
+  const uid = new URLSearchParams(location.search).get("uid");
 
-                const uid = new URLSearchParams(window.location.search).get("uid");
+  const response = await fetch(
+    "https://reachyoupremiumapp.onrender.com/create-order",
+    {
+      method:"POST",
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({amount:1})
+    }
+  );
 
-                if (!uid) {
-                    alert("User ID missing");
-                    return;
-                }
+  const order = await response.json();
 
-                // create Razorpay order
-                const response = await fetch(
-                    "https://reachyoupremiumapp.onrender.com/create-order",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ amount: 1 })
-                    }
-                );
+  const options = {
 
-                const order = await response.json();
+    key:"rzp_live_S9FJRpUQ8s5ixa",
 
-                if (!order || !order.id) {
-                    alert("Failed to create order");
-                    console.error(order);
-                    return;
-                }
+    amount:order.amount,
 
-                const options = {
+    currency:"INR",
 
-                    key: "rzp_live_S9FJRpUQ8s5ixa",
+    order_id:order.id,
 
-                    amount: order.amount,
+    name:"ReachYou Premium",
 
-                    currency: "INR",
+    description:"Premium subscription",
 
-                    order_id: order.id,
+    callback_url:
+    "https://reachyoupremiumapp.onrender.com/payment-success?uid=" + uid + "&days=60"
 
-                    name: "ReachYou Premium",
+  };
 
-                    description: "Premium Subscription",
+  const rzp = new Razorpay(options);
 
-                    handler: async function (response) {
+  rzp.open();
 
-                        await fetch(
-                            "https://reachyoupremiumapp.onrender.com/payment-success",
-                            {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    userId: uid,
-                                    days: 60,
-                                    paymentId: response.razorpay_payment_id
-                                })
-                            }
-                        );
+}
 
-                        alert("Payment successful. Premium activated.");
+startPayment();
 
-                    },
-
-                    modal: {
-                        ondismiss: function () {
-                            alert("Payment cancelled");
-                        }
-                    }
-
-                };
-
-                const rzp = new Razorpay(options);
-
-                rzp.open();
-
-            } catch (error) {
-
-                console.error(error);
-
-                alert("Something went wrong while starting payment.");
-
-            }
-
-        }
-
-        startPayment();
-
-    </script>
+</script>
 
 </body>
 
