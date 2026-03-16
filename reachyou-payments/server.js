@@ -32,22 +32,31 @@ app.post("/create-order", async (req, res) => {
 
 });
 
-app.get("/payment-success", async (req,res)=>{
+app.post("/payment-success", async (req, res) => {
 
-  const { uid, days } = req.query;
+  try {
 
-  const expiry = new Date();
-  expiry.setDate(expiry.getDate() + parseInt(days));
+    const { uid, days } = req.query;
 
-  await supabase
-    .from("profiles")
-    .update({
-      is_premium:true,
-      premium_expiry:expiry
-    })
-    .eq("id",uid);
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + parseInt(days));
 
-  res.send("Payment successful. Premium activated.");
+    await supabase
+      .from("profiles")
+      .update({
+        is_premium: true,
+        premium_expiry: expiry
+      })
+      .eq("id", uid);
+
+    res.send("Payment successful. Premium activated.");
+
+  } catch (err) {
+
+    console.error(err);
+    res.status(500).send("Error updating premium");
+
+  }
 
 });
 app.listen(5000, () => {
